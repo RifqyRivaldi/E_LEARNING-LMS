@@ -63,7 +63,7 @@ class QuizPractice extends Component
 
     public function render()
     {
-        return view('livewire.tryout', [
+        return view('livewire.practice', [
             'quizId' => $this->quiz->id ?? null,
             'questions' => $this->questions,
             'currentQuestion' => $this->currentQuestion ?? null

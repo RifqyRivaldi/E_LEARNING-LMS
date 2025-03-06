@@ -53,7 +53,7 @@
             font-weight: bold;
             color: #dc3545;
             margin: 20px 0;
-            user-select: none;  
+            user-select: none;
         }
 
         .question-section {
@@ -76,7 +76,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            user-select: none;  
+            user-select: none;
         }
 
         .right-panel {
@@ -190,15 +190,22 @@
                 height: 30px;
                 font-size: 0.9em;
             }
+
             .question-image {
-    max-width: 100px; /* Ukuran maksimum lebih kecil */
-    height: auto; /* Menjaga aspek rasio */
-    display: block; 
-    margin: 5px auto; /* Pusatkan gambar */
-    border-radius: 5px; /* Sudut lebih halus */
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Efek shadow ringan */
-    object-fit: contain; /* Pastikan gambar tidak terpotong */
-}
+                max-width: 100px;
+                /* Ukuran maksimum lebih kecil */
+                height: auto;
+                /* Menjaga aspek rasio */
+                display: block;
+                margin: 5px auto;
+                /* Pusatkan gambar */
+                border-radius: 5px;
+                /* Sudut lebih halus */
+                box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+                /* Efek shadow ringan */
+                object-fit: contain;
+                /* Pastikan gambar tidak terpotong */
+            }
 
 
 
@@ -209,7 +216,6 @@
 <body>
     <div class="container mt-5">
         <h1>Sistem Ulangan</h1>
-
         {{ $slot }}
     </div>
 
