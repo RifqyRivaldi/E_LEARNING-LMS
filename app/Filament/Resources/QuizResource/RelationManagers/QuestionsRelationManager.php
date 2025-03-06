@@ -106,11 +106,12 @@ class QuestionsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('question_text')
-                    ->label('Question Text') // Menampilkan teks pertanyaan
-                    ->sortable()
-                    ->searchable(),
+        ->columns([
+            Tables\Columns\TextColumn::make('question_text')
+                ->label('Question Text') // Menampilkan teks pertanyaan
+                ->sortable()
+                ->searchable()
+                ->html(),
                 Tables\Columns\TextColumn::make('category')
                     ->label('Category') // Menampilkan kategori soal
                     ->sortable(),

@@ -15,6 +15,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Actions\Action;
 use Filament\Tables;
+use App\Models\Quiz;
 
 
 class Practice extends ListRecords
@@ -49,7 +50,7 @@ class Practice extends ListRecords
             ->actions([
                 EditAction::make(),
                 Action::make('Kerjakan')
-                ->url('')
+                ->url(fn(Quiz $record):string => route('do-quizpractice', $record))
                 ->color('success')
                 ->openUrlInNewTab()
                 ->icon('fas-pencil'),
