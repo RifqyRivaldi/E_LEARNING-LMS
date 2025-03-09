@@ -16,7 +16,7 @@ class Question extends Model
         'image',
         'category',
         'component',
-        'explanation'
+        'explanation',
     ];
     protected $with = ['answers'];
 

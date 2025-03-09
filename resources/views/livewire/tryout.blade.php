@@ -3,100 +3,89 @@
     <h2>{{ $quiz->name }}</h2>
 
     <!-- Timer -->
-    <div class="timer" id="timer">
-        Waktu tersisa: <span>00:00:00</span>
+    <div class="timer">
+        Waktu tersisa: <span id="timer">00:00:00</span>
     </div>
 
     <div class="quiz-content">
         <!-- Bagian Soal -->
         <div class="question-section">
-            @isset($currentQuestion)
+            @if ($currentQuestion)
                 <div class="question">
                     <p>{{ $currentQuestion->question_text }}</p>
 
-                    {{-- Tambahkan gambar di sini --}}
+                    {{-- Tambahkan gambar jika tersedia --}}
                     @if ($currentQuestion->image)
                         <img src="{{ $currentQuestion->image_url }}" alt="Gambar Pertanyaan" class="question-image"
                             style="max-width: 500px; height: auto; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);">
                     @endif
 
                     <div class="answers">
-                        @foreach ($currentQuestion->answers ?? [] as $answer)
-                            <div class="form-check answer-option">
+                        @foreach ($currentQuestion->answers as $answer)
+                            <div class="form-check answer-option"
+                                style="cursor: pointer; padding: 10px; border-radius: 5px; transition: 0.3s;"
+                                wire:click="selectAnswer({{ $answer->id }})">
                                 <input class="form-check-input" type="radio" name="question" id="answer_{{ $answer->id }}"
-                                    value="{{ $answer->id }}">
+                                    value="{{ $answer->id }}" wire:model.defer="selectedAnswer">
+                                <!-- GUNAKAN .defer AGAR TIDAK HILANG -->
                                 <label class="form-check-label" for="answer_{{ $answer->id }}">
                                     {{ $answer->answer_text }}
                                 </label>
                             </div>
                         @endforeach
-                    </div>
 
+                    </div>
                 </div>
             @else
                 <p class="no-question">Tidak ada pertanyaan.</p>
-            @endisset
+            @endif
         </div>
-
 
         <div class="right-panel">
             <!-- Navigasi Soal -->
             <div class="navigation">
                 <h3>Navigasi Soal</h3>
-                @if ($questions->isNotEmpty())
-                    @foreach ($questions as $index => $item)
-                        <button type="button" wire:click="goToQuestion({{ $index }})" class="btn btn-outline-primary">
-                            {{ $index + 1 }}
-                        </button>
-                    @endforeach
-                @else
-                    <p class="text-danger">Tidak ada pertanyaan yang tersedia.</p>
-                @endif
+                @foreach ($questions as $index => $item)
+                    <button type="button" wire:click="goToQuestion({{ $index }})"
+                        class="btn btn-outline-primary {{ $currentQuestionIndex === $index ? 'active' : '' }}">
+                        {{ $index + 1 }}
+                    </button>
+                @endforeach
             </div>
 
-            <!-- Tombol Submit -->
-            <button type="submit" class="submit-button" onclick="submitQuiz()">
-                Kumpulkan Jawaban
-            </button>
+           <!-- Tombol Submit -->
+<button type="button" class="submit-button" wire:click="finishQuiz">
+    Kumpulkan Jawaban
+</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Inisialisasi timer saat halaman dimuat
     window.onload = function () {
         const duration = 7200; // 2 jam dalam detik
-        const display = document.querySelector('#timer span');
+        const display = document.getElementById('timer');
         startTimer(duration, display);
     }
 
-    // Fungsi untuk memilih jawaban
-    function selectAnswer(element, answerId) {
-        // Hapus seleksi dari semua opsi jawaban
-        document.querySelectorAll('.answer-option').forEach(option => {
-            option.style.background = '#f8f9fa';
-            option.style.color = '#000';
-        });
+    function startTimer(duration, display) {
+        let timer = duration, hours, minutes, seconds;
+        setInterval(function () {
+            hours = parseInt(timer / 3600, 10);
+            minutes = parseInt((timer % 3600) / 60, 10);
+            seconds = parseInt(timer % 60, 10);
 
-        // Tandai opsi yang dipilih
-        element.style.background = '#007bff';
-        element.style.color = '#fff';
+            hours = hours < 10 ? "0" + hours : hours;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        // Di sini bisa ditambahkan logika untuk menyimpan jawaban
-        // Misalnya dengan AJAX atau Livewire
-    }
+            display.textContent = hours + ":" + minutes + ":" + seconds;
 
-    // Fungsi untuk navigasi soal
-    function navigateQuestion(questionNumber) {
-        // Implementasi navigasi soal
-        // Bisa menggunakan AJAX atau Livewire
-    }
-
-    // Fungsi untuk submit quiz
-    function submitQuiz() {
-        if (confirm('Apakah Anda yakin ingin mengumpulkan jawaban?')) {
-            // Implementasi submit quiz
-            // Bisa menggunakan form submission atau AJAX
-        }
+            if (--timer < 0) {
+                timer = 0;
+                alert("Waktu habis! Jawaban akan dikumpulkan.");
+                @this.submitQuiz();
+            }
+        }, 1000);
     }
 </script>

@@ -15,6 +15,7 @@ class Quiz extends Model
         'description',
         'is_paid',
         'quiz_type',
+        'duration',
     ];
 
     public function questions()

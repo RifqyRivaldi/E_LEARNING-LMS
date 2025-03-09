@@ -17,8 +17,10 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->boolean('is_paid')->default(false);
             $table->enum('quiz_type', ['practice', 'tryout']);
+            // $table->integer('duration')->nullable(); // Waktu pengerjaan untuk Tryout (dalam menit)
             $table->timestamps();
         });
+        
     }
 
     /**
