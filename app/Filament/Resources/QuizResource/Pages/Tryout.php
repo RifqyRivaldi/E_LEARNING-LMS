@@ -51,10 +51,11 @@ class Tryout extends ListRecords
         ->actions([
             EditAction::make(),
             Action::make('Kerjakan')
-            ->url(fn(Quiz $record):string => route('do-quiztryout', $record))
+                ->url(fn(Quiz $record): string => route('do-quiztryout', $record))
                 ->color('success')
                 ->openUrlInNewTab()
-                ->icon('fas-pencil'),
+                ->icon('fas-pencil')
+                ->extraAttributes(['onclick' => 'return confirm("Apakah Anda yakin ingin mengerjakan kuis ini?")']),
         ])
         ->bulkActions([
             BulkActionGroup::make([

@@ -7,6 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Sistem Ulangan</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     @livewireStyles
     <style>
         body {
@@ -102,7 +104,8 @@
             transform: translateX(5px);
         }
 
-        .navigation {
+        
+        /* .navigation {
             text-align: center;
             margin-bottom: 20px;
         }
@@ -128,7 +131,7 @@
         .navigation button:hover {
             background: #007bff;
             color: white;
-        }
+        } */
 
         .question-numbers {
             display: flex;

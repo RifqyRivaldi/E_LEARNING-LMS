@@ -47,8 +47,8 @@ class QuestionsRelationManager extends RelationManager
                     ])
                     ->nullable()
                     ->rules(['required_without:image'])
-                    ->fileAttachmentsDirectory('uploads/explanation-images')
-                    ->fileAttachmentsVisibility('public')
+                    ->dehydrateStateUsing(fn ($state) => trim(str_replace('&nbsp;', ' ', strip_tags($state))))
+ // Menghapus tag HTML sebelum menyimpan
                     ->columnSpanFull(),
 
                 // TinyEditor::make('question_text')

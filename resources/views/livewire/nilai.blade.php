@@ -26,9 +26,20 @@
                         <td>{{ $score->total_wrong }}</td>
                         <td>{{ $score->score }}</td>
                         <td>{{ $score->created_at->format('d M Y') }}</td>
-                        
+                        <td>
+                            <form action="{{ route('quiz_scores.destroy', $score->id) }}" method="delete" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                            </form>
+                        </td>
                     </tr>
                 @endforeach
+                @if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
             </tbody>
         </table>
     </div>

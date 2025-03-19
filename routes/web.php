@@ -21,3 +21,7 @@ Route::get('/nilai', function () {
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+// Route untuk menghapus skor kuis
+Route::delete('/quiz_scores/{id}', [QuizTryout::class, 'destroy'])->name('quiz_scores.destroy');

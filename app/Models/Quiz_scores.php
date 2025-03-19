@@ -31,10 +31,10 @@ class Quiz_Scores extends Model
     {
         return $this->belongsTo(User::class);
     }
-public function index()
-{
-    $scores = Quiz_Scores::with('quiz')->orderBy('created_at', 'desc')->get(); // Urutkan dari yang terbaru
-    return view('nilai', compact('scores'));
-}
+    public function index()
+    {
+        $scores = Quiz_Scores::with('quiz')->orderBy('created_at', 'desc')->get(); // Urutkan dari yang terbaru
+        return view('nilai', compact('scores'));
+    }
 
 }

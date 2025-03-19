@@ -18,6 +18,9 @@ class QuizTryout extends Component
     public $selectedAnswer = null;
     public $totalCorrect = 0; // Menyimpan total jawaban benar
     public $totalWrong = 0;   // Menyimpan total jawaban salah
+    public $answers = [];
+    public $markedForReview = [];
+    public $completedQuestions = [];
 
     public function mount($id = null)
     {
@@ -52,6 +55,7 @@ class QuizTryout extends Component
         \Log::info("Pertanyaan pertama: ", ['currentQuestion' => $this->currentQuestion]);
 
         $this->loadSelectedAnswer();
+        $this->loadUserAnswers();
     }
 
     public function goToQuestion($index)
@@ -87,7 +91,7 @@ class QuizTryout extends Component
     public function saveAnswer()
     {
         $user = Auth::user();
-    
+        
         if (!$user) {
             session()->flash('error', 'Anda harus login untuk menjawab kuis.');
             return;
@@ -103,11 +107,8 @@ class QuizTryout extends Component
             return;
         }
     
-        // Cek apakah jawaban benar
-        $isCorrect = $this->selectedAnswer == $this->currentQuestion->correct_answer_id;
-        \Log::info("Selected Answer: " . $this->selectedAnswer);
-\Log::info("Correct Answer ID: " . $this->currentQuestion->correct_answer_id);
-
+        $currentAnswer = $this->currentQuestion->answers->find($this->selectedAnswer);
+        $isCorrect = $currentAnswer && $currentAnswer->fraction > 0;
     
         // Cek apakah user sudah menjawab pertanyaan ini sebelumnya
         $existingAttempt = Quiz_attempts::where([
@@ -117,11 +118,11 @@ class QuizTryout extends Component
         ])->first();
     
         if ($existingAttempt) {
-            // Jika jawaban sebelumnya benar, kurangi dari totalCorrect
+            // Jika jawaban sebelumnya benar
             if ($existingAttempt->is_correct) {
-                $this->totalCorrect--;
+                $this->totalCorrect -= $existingAttempt->fraction; // Kurangi nilai dari jawaban sebelumnya
             } else {
-                $this->totalWrong--;
+                $this->totalWrong--; // Kurangi total salah jika ada
             }
         }
     
@@ -135,21 +136,31 @@ class QuizTryout extends Component
             [
                 'question_answer_id' => $this->selectedAnswer,
                 'is_correct' => $isCorrect,
+                'fraction' => $currentAnswer->fraction,
                 'updated_at' => now(),
             ]
         );
     
-        // Perbarui total benar dan salah
         if ($isCorrect) {
-            $this->totalCorrect++;
+            $this->totalCorrect += $currentAnswer->fraction; // Tambahkan nilai jika benar
         } else {
-            $this->totalWrong++;
+            $this->totalWrong++; // Tambahkan total salah jika tidak benar
+        }
+
+        if ($this->currentAnswerIsFilled()) { // Ganti dengan logika untuk memeriksa apakah jawaban telah diisi
+            if (!in_array($this->currentQuestion->id, $this->completedQuestions)) {
+                $this->completedQuestions[] = $this->currentQuestion->id;
+            }
         }
     
         session()->flash('success', 'Jawaban berhasil disimpan.');
     }
     
-    
+    private function currentAnswerIsFilled()
+{
+    // Logika untuk memeriksa apakah jawaban saat ini sudah diisi
+    return isset($this->answers[$this->currentQuestion->id]);
+}
 
     public function loadSelectedAnswer()
     {
@@ -193,11 +204,13 @@ class QuizTryout extends Component
         ]);
     
         session()->flash('success', 'Kuis selesai. Skor Anda telah disimpan.');
-        return redirect()->route('nilai'); // Pastikan rute ini sesuai
+        $this->resetQuiz();
+        $this->isSubmitted = true; // Set status setelah submit
+        return redirect()->route('nilai');
     }
     
     
-
+    public $isSubmitted = false; // Tambahkan ini di bagian atas kelas
     public function calculateScore()
     {
         $totalQuestions = count($this->quiz->questions);
@@ -230,5 +243,60 @@ public function checkAnswer($selectedOption)
         $this->finishQuiz();
     }
 }
+public function loadUserAnswers()
+{
+    $user = Auth::user();
+    
+    if (!$user) return;
 
+    $userAnswers = Quiz_attempts::where('user_id', $user->id)
+        ->where('quiz_id', $this->quiz->id)
+        ->get();
+
+    foreach ($userAnswers as $attempt) {
+        $this->answers[$attempt->question_id] = $attempt->question_answer_id;
+    }
+}
+public function resetQuiz()
+{
+    $this->currentQuestionIndex = 0;
+    $this->selectedAnswer = null; // Reset jawaban terpilih
+    $this->totalCorrect = 0;
+    $this->totalWrong = 0;
+    $this->answers = []; // Kosongkan semua jawaban yang tersimpan
+
+    // Ambil pertanyaan lagi jika perlu
+    $this->questions = Question::where('quiz_id', $this->quiz->id)->with('answers')->get();
+    $this->currentQuestion = $this->questions->first();
+}
+public function nextQuestion()
+{
+    $this->saveAnswer(); // Simpan jawaban sebelum berpindah
+    if ($this->currentQuestionIndex < count($this->questions) - 1) {
+        $this->currentQuestionIndex++;
+        $this->currentQuestion = $this->questions[$this->currentQuestionIndex];
+        $this->loadSelectedAnswer(); // Muat jawaban yang dipilih
+    }
+}
+
+public function previousQuestion()
+{
+    $this->saveAnswer(); // Simpan jawaban sebelum berpindah
+    if ($this->currentQuestionIndex > 0) {
+        $this->currentQuestionIndex--;
+        $this->currentQuestion = $this->questions[$this->currentQuestionIndex];
+        $this->loadSelectedAnswer(); // Muat jawaban yang dipilih
+    }
+}
+
+public function markForReview()
+{
+    if (!in_array($this->currentQuestion->id, $this->markedForReview)) {
+        $this->markedForReview[] = $this->currentQuestion->id; // Tandai pertanyaan
+        session()->flash('info', 'Pertanyaan ini telah ditandai untuk ditinjau.');
+    } else {
+        $this->markedForReview = array_diff($this->markedForReview, [$this->currentQuestion->id]); // Hapus tanda
+        session()->flash('info', 'Pertanyaan ini telah dihapus dari tanda ragu-ragu.');
+    }
+}
 }
