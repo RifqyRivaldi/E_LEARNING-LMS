@@ -18,6 +18,12 @@ Route::get('/nilai', function () {
     return view('livewire.nilai', compact('scores'));
 })->name('nilai')->middleware('auth');
 
+
+Route::get('/nilai1', function () {
+    $scores = Quiz_Scores::where('user_id', Auth::id())->with('quiz')->get();
+    return view('livewire.nilai1', compact('scores'));
+})->name('nilai1')->middleware('auth');
+
 Route::get('/', function () {
     return view('welcome');
 });

@@ -1,46 +1,36 @@
 @extends('components.layouts.app1')
 
-@section('title', 'Halaman Nilai')
-
 @section('content')
-    <div class="container">
-        <h1 class="mb-4">Daftar Nilai</h1>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Quiz</th>
-                    <th>Benar</th>
-                    <th>Salah</th>
-                    <th>Skor</th>
-                    <th>Tanggal</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($scores as $index => $score)
+<div class="container text-center">
+    <h1>Hasil Tryout</h1>
+
+    @if($scores->isEmpty())
+        <p>Tidak ada skor yang tersedia untuk Anda.</p>
+    @else
+        @php
+            $latestScore = $scores->where('user_id', auth()->id())->last();
+        @endphp
+        
+        @if($latestScore)
+            <table class="table table-bordered table-striped mx-auto" style="width: 80%;">
+                <thead>
                     <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $score->quiz->title }}</td>
-                        <td>{{ $score->total_correct }}</td>
-                        <td>{{ $score->total_wrong }}</td>
-                        <td>{{ $score->score }}</td>
-                        <td>{{ $score->created_at->format('d M Y') }}</td>
-                        <td>
-                            <form action="{{ route('quiz_scores.destroy', $score->id) }}" method="delete" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
-                        </td>
+                        <th>ID Kuis</th>
+                        <th>Nilai SKD</th>
+                        <th>Tanggal</th>
                     </tr>
-                @endforeach
-                @if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ $latestScore->quiz->id }}</td>
+                        <td>{{ $latestScore->total_correct }}</td>
+                        <td>{{ $latestScore->created_at->format('d-m-Y H:i') }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        @else
+            <p>Anda belum mengerjakan tryout terbaru.</p>
+        @endif
+    @endif
+</div>
 @endsection

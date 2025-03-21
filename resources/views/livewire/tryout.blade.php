@@ -25,10 +25,9 @@
                             <div class="form-check">
                                 <input type="radio" id="answer{{ $answer->id }}" name="answer" value="{{ $answer->id }}"
                                     wire:model="selectedAnswer" class="form-check-input">
-                                <label for="answer{{ $answer->id }}"
-                                    class="form-check-label {{ $selectedAnswer == $answer->id ? 'text-primary' : '' }}">
-                                    {{ $answer->answer_text }}
-                                </label>
+                                    <label for="answer{{ $answer->id }}" class="form-check-label">
+                                        {{ $answer->answer_text }}
+                                    </label>
                             </div>
                         @endforeach
                     </div>

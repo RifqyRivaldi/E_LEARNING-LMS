@@ -9,7 +9,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">E-Learning</a>
+            <a class="navbar-brand" href="{{ url('/') }}">NILAI TRYOUT</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -18,13 +18,8 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('nilai') }}">Nilai</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('do-quiztryout', ['id' => 1]) }}">Quiz Tryout</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('do-quizpractice', ['id' => 1]) }}">Quiz Practice</a>
-                    </li>
-                </ul>
+        
+            </ul>
             </div>
         </div>
     </nav>

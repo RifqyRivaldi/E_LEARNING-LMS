@@ -203,12 +203,21 @@ class QuizTryout extends Component
             'score' => $this->calculateScore(), // Menyimpan nilai berdasarkan bobot
         ]);
     
-        session()->flash('success', 'Kuis selesai. Skor Anda telah disimpan.');
+        // Hapus semua jawaban pengguna dari tabel Quiz_attempts setelah kuis selesai
+        Quiz_attempts::where('user_id', $user->id)
+            ->where('quiz_id', $this->quiz->id)
+            ->delete();
+    
+        // Reset semua data yang tersimpan
         $this->resetQuiz();
-        $this->isSubmitted = true; // Set status setelah submit
+        $this->answers = [];
+        $this->markedForReview = [];
+        $this->completedQuestions = [];
+    
+        session()->flash('success', 'Kuis selesai. Jawaban telah dihapus dan skor Anda telah disimpan.');
+        
         return redirect()->route('nilai');
     }
-    
     
     public $isSubmitted = false; // Tambahkan ini di bagian atas kelas
     public function calculateScore()
